@@ -1,0 +1,35 @@
+<h1>書籍一覧</h1>
+
+<%= link_to "新しい書籍を登録する", new_book_path %> | 
+<%= link_to "Excelにエクスポート", books_path(format: :xlsx), style: "color: green; font-weight: bold;" %>
+
+<hr>
+
+<table border="1" style="border-collapse: collapse; width: 100%; text-align: left;">
+  <thead>
+    <tr>
+      <th>タイトル</th>
+      <th>著者</th>
+      <th>ステータス</th>
+      <th>進捗</th>
+      <th>メモ</th>
+      <th>アクション</th> <!-- 列を追加 -->
+    </tr>
+  </thead>
+  <tbody>
+    <% @books.each do |book| %>
+      <tr>
+        <td><%= book.title %></td>
+        <td><%= book.author %></td>
+        <td><%= book.status %></td>
+        <td><%= book.progress %>%</td>
+        <td><%= book.memo %></td>
+        <td>
+          <%= link_to "詳細", book_path(book) %> | 
+          <%= link_to "編集", edit_book_path(book) %> | 
+          <%= link_to "削除", book_path(book), data: { rails_method: :delete, turbo_method: :delete, confirm: "本当に削除しますか？" } %>
+        </td>
+      </tr>
+    <% end %>
+  </tbody>
+</table>

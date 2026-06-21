@@ -1,0 +1,59 @@
+<div class="max-w-3xl mx-auto px-4 py-12">
+  <div class="mb-6">
+    <%= link_to books_path, class: "inline-flex items-center text-sm font-medium text-indigo-600 hover:text-indigo-900 transition" do %>
+      <svg class="mr-2 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 19l-7-7m0 0l7-7m-7 7h18"/></svg>
+      一覧に戻る
+    <% end %>
+  </div>
+
+  <div class="bg-white shadow overflow-hidden sm:rounded-lg border border-gray-200">
+    <div class="px-6 py-6 border-b border-gray-200 bg-gray-50 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+      <div>
+        <h1 class="text-2xl font-bold text-gray-900"><%= @book.title %></h1>
+        <p class="mt-1 text-sm text-gray-500">著者: <%= @book.author.presence || "未登録" %></p>
+      </div>
+      <div class="flex space-x-2">
+        <%= link_to "編集する", edit_book_path(@book), class: "inline-flex items-center px-3 py-1.5 border border-gray-300 rounded-md shadow-sm text-xs font-medium text-gray-700 bg-white hover:bg-gray-50 transition" %>
+      </div>
+    </div>
+
+    <div class="border-t border-gray-200 px-6 py-5 space-y-6">
+      <div class="grid grid-cols-1 gap-y-6 sm:grid-cols-2">
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">現在のステータス</h3>
+          <div class="mt-2">
+            <% case @book.status %>
+            <% when "読了" %>
+              <span class="px-3 py-1 text-xs font-semibold rounded-full bg-green-100 text-green-800">読了</span>
+            <% when "読書中" %>
+              <span class="px-3 py-1 text-xs font-semibold rounded-full bg-amber-100 text-amber-800">読書中</span>
+            <% else %>
+              <span class="px-3 py-1 text-xs font-semibold rounded-full bg-gray-100 text-gray-800">未読</span>
+            <% end %>
+          </div>
+        </div>
+
+        <div>
+          <h3 class="text-sm font-medium text-gray-500">読書進捗</h3>
+          <div class="mt-2 flex items-center space-x-3">
+            <div class="w-32 bg-gray-200 rounded-full h-2.5">
+              <div class="bg-indigo-600 h-2.5 rounded-full" style="width: <%= [@book.progress.to_i, 100].min %>%"></div>
+            </div>
+            <span class="text-sm font-bold text-gray-900"><%= @book.progress.to_i %>%</span>
+          </div>
+        </div>
+      </div>
+
+      <div class="border-t border-gray-100 pt-6">
+        <h3 class="text-sm font-medium text-gray-500 mb-3">読書メモ・フレーズ</h3>
+        <% if @book.memo.present? %>
+          <div class="rounded-lg bg-gray-50 p-4 border border-gray-200 text-gray-700 whitespace-pre-wrap leading-relaxed">
+            <%= @book.memo %>
+          </div>
+        <% else %>
+          <p class="text-sm text-gray-400 italic">メモはまだ登録されていません。</p>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

@@ -1,0 +1,85 @@
+wb = xlsx_package.workbook
+
+# ----------------------------------------------------
+# スタイルの定義（フォントや背景色、罫線）
+# ----------------------------------------------------
+wb.styles do |s|
+  # タイトル用スタイル
+  title_style = s.add_style font_name: "Aptos", sz: 16, bold: true, fg_color: "1F4E78"
+  
+  # ヘッダー用スタイル（濃いネイビー背景、白文字、中央揃え、細枠の罫線）
+  header_style = s.add_style font_name: "Aptos", b: true, bg_color: "1F4E78", fg_color: "FFFFFF",
+                             alignment: { horizontal: :center, vertical: :center },
+                             border: { style: :thin, color: "D9D9D9" }
+                             
+  # 通常データ用スタイル（細枠の罫線）
+  data_style = s.add_style font_name: "Aptos", border: { style: :thin, color: "D9D9D9" }, alignment: { vertical: :center }
+  
+  # 中央揃えデータ用スタイル（IDやステータス用）
+  center_style = s.add_style font_name: "Aptos", border: { style: :thin, color: "D9D9D9" }, alignment: { horizontal: :center, vertical: :center }
+  
+  # 進捗率用スタイル（右揃え、数値フォーマット）
+  progress_style = s.add_style font_name: "Aptos", border: { style: :thin, color: "D9D9D9" }, alignment: { horizontal: :right, vertical: :center }, format_code: '0"%"'
+  
+  # ★ メモ専用スタイル：あらかじめ「折り返し(wrap_text)」と「上下中央揃え」を組み込んで定義します
+  memo_style = s.add_style font_name: "Aptos", border: { style: :thin, color: "D9D9D9" }, alignment: { wrap_text: true, vertical: :center }
+  
+  # ダッシュボード用（カード風スタイル）
+  card_label_style = s.add_style font_name: "Aptos", sz: 9, fg_color: "5F6368", bg_color: "F8F9FA", alignment: { horizontal: :center, vertical: :center }, border: { style: :thin, color: "D9D9D9" }
+  card_value_style = s.add_style font_name: "Aptos", sz: 18, b: true, fg_color: "1F4E78", bg_color: "F8F9FA", alignment: { horizontal: :center, vertical: :center }, border: { style: :thin, color: "D9D9D9" }
+
+  # ----------------------------------------------------
+  # タブ1: ダッシュボード（集計画面）
+  # ----------------------------------------------------
+  wb.add_worksheet(name: "ダッシュボード") do |sheet|
+    sheet.add_row ["書籍管理ダッシュボード"], style: title_style
+    sheet.rows[0].height = 35
+    
+    sheet.add_row [] # 空行
+    
+    # Excelの関数（COUNTAやCOUNTIF）を埋め込んで自動集計させる
+    sheet.add_row ["総登録書籍数", "読了数", "読書中数", "未読数"], style: card_label_style
+    sheet.add_row [
+      "=COUNTA('書籍一覧データ'!A2:A100)",
+      "=COUNTIF('書籍一覧データ'!D2:D100, \"読了\")",
+      "=COUNTIF('書籍一覧データ'!D2:D100, \"読書中\")",
+      "=COUNTIF('書籍一覧データ'!D2:D100, \"未読\")"
+    ], style: card_value_style
+    
+    sheet.rows[2].height = 18
+    sheet.rows[3].height = 30
+    
+    sheet.add_row []
+    sheet.add_row ["※ 詳細は「書籍一覧データ」タブをご確認ください。"], font_name: "Aptos", sz: 10, italic: true, fg_color: "757575"
+    
+    sheet.column_widths 18, 18, 18, 18
+  end
+
+  # ----------------------------------------------------
+  # タブ2: 書籍一覧データ
+  # ----------------------------------------------------
+  wb.add_worksheet(name: "書籍一覧データ") do |sheet|
+    # ヘッダー行を追加
+    sheet.add_row ["ID", "タイトル", "著者", "ステータス", "進捗", "メモ"], style: header_style
+    sheet.rows[0].height = 25
+    
+    # データベースのレコードを繰り返し書き出し
+    @books.each do |book|
+      # 各セルに対応するスタイルを配列で指定します（最後のメモ列に新設した memo_style を指定）
+      sheet.add_row [
+        book.id,
+        book.title,
+        book.author,
+        book.status,
+        book.progress,
+        book.memo
+      ], style: [center_style, data_style, data_style, center_style, progress_style, memo_style]
+      
+      # 行の高さだけを指定（エラーの原因になっていたセルの個別書き換えを無くしました）
+      sheet.rows.last.height = 22
+    end
+    
+    # 各列の幅を綺麗に自動調整
+    sheet.column_widths 8, 30, 20, 15, 12, 45
+  end
+end

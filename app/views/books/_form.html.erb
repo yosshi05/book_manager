@@ -1,0 +1,65 @@
+<%= form_with model: book, local: true, class: "space-y-6" do |form| %>
+  <% if book.errors.any? %>
+    <div class="rounded-md bg-red-50 p-4 border border-red-200 mb-6">
+      <div class="flex">
+        <div class="flex-shrink-0">
+          <svg class="h-5 w-5 text-red-400" viewBox="0 0 20 20" fill="currentColor">
+            <path fill-rule="evenodd" d="M10 18a8 8 0 100-16 8 8 0 000 16zM8.707 7.293a1 1 0 00-1.414 1.414L8.586 10l-1.293 1.293a1 1 0 101.414 1.414L10 11.414l1.293 1.293a1 1 0 001.414-1.414L11.414 10l1.293-1.293a1 1 0 00-1.414-1.414L10 8.586 8.707 7.293z" clip-rule="evenodd"/>
+          </svg>
+        </div>
+        <div class="ml-3">
+          <h3 class="text-sm font-medium text-red-800"><%= book.errors.count %>件のエラーが発生したため保存できませんでした:</h3>
+          <div class="mt-2 text-sm text-red-700">
+            <ul class="list-disc pl-5 space-y-1">
+              <% book.errors.full_messages.each do |message| %>
+                <li><%= message %></li>
+              <% end %>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+  <% end %>
+
+  <div>
+    <%= form.label :title, "書籍タイトル (必須)", class: "block text-sm font-medium text-gray-700" %>
+    <div class="mt-1">
+      <%= form.text_field :title, class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition", placeholder: "例: リーダブルコード" %>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :author, "著者名", class: "block text-sm font-medium text-gray-700" %>
+    <div class="mt-1">
+      <%= form.text_field :author, class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition", placeholder: "例: Dustin Boswell" %>
+    </div>
+  </div>
+
+  <div class="grid grid-cols-1 gap-y-6 gap-x-4 sm:grid-cols-2">
+    <div>
+      <%= form.label :status, "読書ステータス", class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= form.select :status, ["未読", "読書中", "読了"], {}, class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm bg-white" %>
+      </div>
+    </div>
+
+    <div>
+      <%= form.label :progress, "進捗率 (%)", class: "block text-sm font-medium text-gray-700" %>
+      <div class="mt-1">
+        <%= form.number_field :progress, class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition", placeholder: "0 〜 100" %>
+      </div>
+    </div>
+  </div>
+
+  <div>
+    <%= form.label :memo, "読書メモ・要約", class: "block text-sm font-medium text-gray-700" %>
+    <div class="mt-1">
+      <%= form.text_area :memo, rows: 4, class: "block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-indigo-500 sm:text-sm transition", placeholder: "気になったフレーズや要約を自由に記入" %>
+    </div>
+  </div>
+
+  <div class="flex items-center justify-end space-x-3 border-t border-gray-200 pt-6">
+    <%= link_to "キャンセル", books_path, class: "rounded-md border border-gray-300 bg-white py-2 px-4 text-sm font-medium text-gray-700 shadow-sm hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition" %>
+    <%= form.submit class: "inline-flex justify-center rounded-md border border-transparent bg-indigo-600 py-2 px-4 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 transition cursor-pointer" %>
+  </div>
+<% end %>
